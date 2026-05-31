@@ -28,7 +28,6 @@ Class Database {
      * Creates a new connection if one does not exist.
      *
      * @return PDO Active database connection
-     * @throws PDOException If connection fails
      */
     public static function getConnection(): PDO {
         if (self::$connection === null) {
