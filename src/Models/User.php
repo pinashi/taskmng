@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Config\Database;
 use PDO;
+use PDOException;
 
 /**
  * Model for managing users.
@@ -30,11 +31,16 @@ Class User {
      * @return array|false User data or false if not found
      */
     public function getByEmail(string $email): array|false {
-        $stmt = $this->db->prepare('
-            SELECT * FROM users WHERE email = ?
-        ');
-        $stmt->execute([$email]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        try {    
+            $stmt = $this->db->prepare('
+                SELECT * FROM users WHERE email = ?
+            ');
+            $stmt->execute([$email]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            return false;
+        }
     }
 
     /**
@@ -44,13 +50,18 @@ Class User {
      * @return bool True on success, false on failure
      */
     public function create(array $data): bool {
-        $stmt = $this->db->prepare('
-            INSERT INTO users (name, email, password) VALUES (?, ?, ?)
-        ');
-        return $stmt->execute([
-            $data['name'],
-            $data['email'],
-            password_hash($data['password'], PASSWORD_BCRYPT)
-        ]);
+        try {
+            $stmt = $this->db->prepare('
+                INSERT INTO users (name, email, password) VALUES (?, ?, ?)
+            ');
+            return $stmt->execute([
+                $data['name'],
+                $data['email'],
+                password_hash($data['password'], PASSWORD_BCRYPT)
+            ]);
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            return false;
+        }
     }
 }
