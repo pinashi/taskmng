@@ -6,6 +6,7 @@ namespace App\Controllers;
 
 use App\Models\Task;
 use App\Traits\TaskAccessTrait;
+use App\Validators\TaskValidator;
 
 /**
  * Handles all task operations: listing, creating, editing, updating and deleting.
@@ -18,35 +19,21 @@ Class TaskController {
      * @var Task $task Task model instance
      */
     private Task $task;
+    /**
+     * @var TaskValidator $validator Task validator instance
+     */
+    private TaskValidator $validator;
 
     /**
      * Initializes task model via dependency injection.
      *
      * @param Task $task Task model instance
+     * @param TaskValidator $validator Task validator instance
      */
-    public function __construct(Task $task) {
+    public function __construct(Task $task, TaskValidator $validator) {
         $this->task = $task;
+        $this->validator = $validator;
     }
-
-    /**
-     * Validate post form data.
-     *
-     * @param array $data Form data containing title and content
-     * @return array List of validation errors, empty if valid
-     */
-    private function validate(array $data): array {
-        $errors = [];
-    
-        if (empty(trim($data['title'] ?? ''))) {
-            $errors[] = 'Заголовок обязателен';
-        }
-    
-        if (strlen($data['title'] ?? '') > 255) {
-            $errors[] = 'Заголовок не должен превышать 255 символов';
-        }
-    
-        return $errors;
-    }   
 
     /**
      * Handle file upload.
@@ -138,7 +125,7 @@ Class TaskController {
             return;
         }
 
-        $errors = $this->validate($_POST);
+        $errors = $this->validator->validate($_POST);
 
         if (!empty($errors)) {
             $old = $_POST;
@@ -195,7 +182,7 @@ Class TaskController {
             return;
         }
 
-        $errors = $this->validate($_POST);
+        $errors = $this->validator->validate($_POST);
 
         if (!empty($errors)) {
             $old = $_POST;

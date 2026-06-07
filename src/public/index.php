@@ -12,12 +12,14 @@ use App\Models\Task;
 use App\Models\User;
 use App\Container;
 use App\Router;
+use App\Validators\TaskValidator;
 
 $container = new Container();
 
 $container->bind(TaskController::class, function($container) {
     return new TaskController(
-        $container->make(Task::class)
+        $container->make(Task::class),
+        new TaskValidator()
     );
 });
 
