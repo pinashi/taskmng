@@ -71,14 +71,15 @@ Class Task {
     public function create(array $data): bool {
         try {
             $stmt = $this->db->prepare('
-                INSERT INTO tasks (user_id, title, description, status, deadline) VALUES (?, ?, ?, ?, ?)
+                INSERT INTO tasks (user_id, title, description, status, deadline, attachment) VALUES (?, ?, ?, ?, ?, ?)
             ');
             return $stmt->execute([
                 $data['user_id'],
                 $data['title'],
                 $data['description'],
                 $data['status'],
-                $data['deadline']
+                $data['deadline'],
+                $data['attachment'] ?? null
             ]);
         } catch (PDOException $e) {
             error_log($e->getMessage());
@@ -96,13 +97,14 @@ Class Task {
     public function update(int $id, array $data): bool {
         try {
             $stmt = $this->db->prepare('
-                UPDATE tasks SET title = ?, description = ?, status = ?, deadline = ? WHERE id = ?        
+                UPDATE tasks SET title = ?, description = ?, status = ?, deadline = ?, attachment = ? WHERE id = ?        
             ');
             return $stmt->execute([
                 $data['title'],
                 $data['description'],
                 $data['status'],
                 $data['deadline'],
+                $data['attachment'] ?? null,
                 $id
             ]);
         } catch (PDOException $e) {

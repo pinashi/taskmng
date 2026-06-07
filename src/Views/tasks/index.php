@@ -43,6 +43,13 @@
                         <?php if ($task['description']): ?>
                             <p><?= htmlspecialchars($task['description']) ?></p>
                         <?php endif; ?>
+                        
+                        <?php if ($task['attachment']): ?>
+                        <a href="/uploads/<?= htmlspecialchars($task['attachment']) ?>" target="_blank">
+                            📎 Прикреплённый файл
+                        </a>
+                        <?php endif; ?>
+
                         <?php if ($task['deadline']): ?>
                             <small>Дедлайн: <?= $task['deadline'] ?></small>
                         <?php endif; ?>

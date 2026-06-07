@@ -1,2 +1,4 @@
 .env
 vendor/
+src/public/uploads/*
+!src/public/uploads/.gitkeep

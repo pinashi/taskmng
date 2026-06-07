@@ -36,6 +36,42 @@ Class TaskController {
         return $errors;
     }   
 
+    private function handleUpload(array $file): ?string {
+        if ($file['error'] === UPLOAD_ERR_NO_FILE) {
+            return null;
+        }
+
+        if ($file['error'] !== 0) {
+            return null;
+        }
+
+        $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/pdf'];
+        $maxSize = 5 * 1024 * 1024;
+
+        if (!in_array($file['type'], $allowed)) {
+            return null;
+        }
+
+        if ($file['size'] > $maxSize) {
+            return null;
+        }
+
+        $extension  = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $filename   = uniqid() . '.' . $extension;
+        $uploadDir  = __DIR__ . '/../public/uploads/';
+
+        if (!$uploadDir) {
+            mkdir($uploadDir, 0755, true);
+        }
+        
+        if (!move_uploaded_file($file['tmp_name'], $uploadDir . $filename)) {
+            error_log('Failed to move uploaded file');
+            return null;
+        }
+    
+        return $filename;
+    }
+
     public function index() {
         if (!isset($_SESSION['user_id'])) {
             header('Location: /login');
@@ -72,12 +108,15 @@ Class TaskController {
             return;
         }
 
+        $attachment = $this->handleUpload($_FILES['attachment'] ?? []);
+
         $this->task->create([
             'user_id'     => $_SESSION['user_id'],
             'title'       => trim($_POST['title']),
             'description' => trim($_POST['description'] ?? ''),
             'status'      => $_POST['status'],
-            'deadline'    => $_POST['deadline'] ?: null
+            'deadline'    => $_POST['deadline'] ?: null,
+            'attachment'  => $attachment
         ]);
 
         header('Location: /');
@@ -111,11 +150,18 @@ Class TaskController {
             return;
         }
 
+        if (isset($_FILES['attachment']) && $_FILES['attachment']['error'] !== UPLOAD_ERR_NO_FILE) {
+            $attachment = $this->handleUpload($_FILES['attachment']);
+        } else {
+            $attachment = $task['attachment'];
+        }
+
         $data = [
             'title'         => $_POST['title'],
             'description'   => $_POST['description'],
             'status'        => $_POST['status'],
-            'deadline'      => $_POST['deadline'] ?: null
+            'deadline'      => $_POST['deadline'] ?: null,
+            'attachment'    => $attachment
         ];
     
         $this->task->update($id, $data);

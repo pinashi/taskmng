@@ -20,7 +20,7 @@
         </ul>
     <?php endif; ?>
 
-    <form method="POST" action="/task/create">
+    <form method="POST" action="/task/create" enctype="multipart/form-data">
         <label>Заголовок</label><br>
         <input type="text" name="title" value="<?= htmlspecialchars($old['title'] ?? '') ?>" required><br><br>
 
@@ -36,6 +36,9 @@
 
         <label>Дедлайн</label><br>
         <input type="date" name="deadline" value="<?= $old['deadline'] ?? '' ?>"><br><br>
+
+        <label>Прикрепить файл</label><br>
+        <input type="file" name="attachment"><br><br>
 
         <button type="submit">Создать</button>
     </form>

@@ -25,7 +25,7 @@
         </ul>
     <?php endif; ?>
 
-    <form method="POST" action="/task/<?= $task['id'] ?>/edit">
+    <form method="POST" action="/task/<?= $task['id'] ?>/edit" enctype="multipart/form-data">
         <label>Заголовок</label><br>
         <input type="text" name="title" value="<?= htmlspecialchars($old['title'] ?? $task['title']) ?>" required><br><br>
 
@@ -47,6 +47,12 @@
 
         <label>Дедлайн</label><br>
         <input type="date" name="deadline" value="<?= $old['deadline'] ?? $task['deadline'] ?? '' ?>"><br><br>
+
+        <label>Прикрепить файл</label><br>
+        <?php if ($task['attachment']): ?>
+            <p>Текущий файл: <a href="/uploads/<?= htmlspecialchars($task['attachment']) ?>" target="_blank">открыть</a></p>
+        <?php endif; ?>
+        <input type="file" name="attachment"><br><br>
 
         <button type="submit">Сохранить</button>
     </form>
