@@ -7,11 +7,23 @@ namespace App\Controllers;
 use App\Models\Task;
 use App\Traits\TaskAccessTrait;
 
+/**
+ * Handles all task operations: listing, creating, editing, updating and deleting.
+ * Uses TaskAccessTrait for access control checks.
+ */
 Class TaskController {
     use TaskAccessTrait;
 
+    /**
+     * @var Task $task Task model instance
+     */
     private Task $task;
 
+    /**
+     * Initializes task model via dependency injection.
+     *
+     * @param Task $task Task model instance
+     */
     public function __construct(Task $task) {
         $this->task = $task;
     }
@@ -36,6 +48,13 @@ Class TaskController {
         return $errors;
     }   
 
+    /**
+     * Handle file upload.
+     * Validates file type and size, saves file to uploads directory.
+     *
+     * @param array $file $_FILES array entry
+     * @return string|null Filename on success, null if no file or on failure
+     */
     private function handleUpload(array $file): ?string {
         if ($file['error'] === UPLOAD_ERR_NO_FILE) {
             return null;
@@ -72,6 +91,12 @@ Class TaskController {
         return $filename;
     }
 
+    /**
+     * Display list of all tasks grouped by status.
+     * Requires authentication.
+     *
+     * @return void
+     */
     public function index() {
         if (!isset($_SESSION['user_id'])) {
             header('Location: /login');
@@ -82,6 +107,12 @@ Class TaskController {
         require_once __DIR__ . '/../Views/tasks/index.php';
     }
 
+    /**
+     * Display task creation form.
+     * Requires authentication.
+     *
+     * @return void
+     */
     public function create() {
         if (!isset($_SESSION['user_id'])) {
             header('Location: /login');
@@ -94,6 +125,13 @@ Class TaskController {
         return;
     }
 
+    /**
+     * Handle task creation form submission.
+     * Validates input, handles file upload and saves task.
+     * Requires authentication.
+     *
+     * @return void
+     */
     public function store(): void {
         if (!isset($_SESSION['user_id'])) {
             header('Location: /login');
@@ -122,6 +160,13 @@ Class TaskController {
         header('Location: /');
     }
 
+    /**
+     * Display task edit form.
+     * Requires authentication and task ownership.
+     *
+     * @param int $id Task ID
+     * @return void
+     */
     public function edit(int $id): void {
         $task = $this->task->getById($id);
 
@@ -135,6 +180,14 @@ Class TaskController {
         require_once __DIR__ . '/../Views/tasks/edit.php';
     }
 
+    /**
+     * Handle task update form submission.
+     * Validates input, handles file upload and updates task.
+     * Requires authentication and task ownership.
+     *
+     * @param int $id Task ID
+     * @return void
+     */
     public function update(int $id): void {
         $task = $this->task->getById($id);
 
@@ -168,6 +221,14 @@ Class TaskController {
         header('Location: /');
     }
 
+    /**
+     * Update task status.
+     * Validates status value against allowed values.
+     * Requires authentication and task ownership.
+     *
+     * @param int $id Task ID
+     * @return void
+     */
     public function updateStatus(int $id): void {
         $task = $this->task->getById($id);
 
@@ -187,6 +248,13 @@ Class TaskController {
         header('Location: /');
     }
 
+    /**
+     * Delete a task and redirect to home page.
+     * Requires authentication and task ownership.
+     *
+     * @param int $id Task ID
+     * @return void
+     */
     public function destroy(int $id): void {
         $task = $this->task->getById($id);
 

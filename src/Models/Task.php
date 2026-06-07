@@ -65,7 +65,7 @@ Class Task {
     /**
      * Create a new task.
      *
-     * @param array $data Task data containing user_id, title, description, status, deadline
+     * @param array $data Task data containing user_id, title, description, status, deadline, attachment
      * @return bool True on success, false on failure
      */
     public function create(array $data): bool {
@@ -91,7 +91,7 @@ Class Task {
      * Update an existing task.
      *
      * @param int $id Task ID
-     * @param array $data Updated data containing title, description, status, deadline
+     * @param array $data Updated data containing title, description, status, deadline, attachment
      * @return bool True on success, false on failure
      */
     public function update(int $id, array $data): bool {
